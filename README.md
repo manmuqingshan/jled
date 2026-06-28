@@ -526,10 +526,15 @@ led.Stop(JLed::eStopMode::FULL_OFF);
 
 ### Pause and Resume
 
-Call `Pause()` to freeze the current effect at its current brightness. While paused,
-`Update()` returns `true` but does not advance the effect or change the brightness output.
-Call `Resume()` to continue the effect from the exact point where it was paused. `IsPaused()`
-returns `true` while the effect is frozen.
+Call `Pause()` to freeze the current effect. While paused, `Update()` returns `true` but
+does not advance the effect. Call `Resume()` to continue from the exact point where it was
+paused. `IsPaused()` returns `true` while the effect is frozen.
+
+`Pause()` accepts an optional `mode` argument of type `jled::eIdleMode` (same values as
+`Stop()`) that controls the LED's brightness during the pause. The default is
+`jled::eIdleMode::TO_MIN_BRIGHTNESS`, which sets the LED to its configured minimum
+brightness. Use `jled::eIdleMode::KEEP_CURRENT` to hold the last rendered value, or
+`jled::eIdleMode::FULL_OFF` to force the LED off regardless of `MinBrightness`.
 
 Pausing before an effect has started is valid: the effect will not start until
 `Resume()` is called.
@@ -619,8 +624,9 @@ automatically. A runtime-size overload is also available:
   running, `false` when it has finished.
 - `Repeat(n)` - plays the group `n` times. Default is 1.
 - `Forever()` - plays the group indefinitely.
-- `Stop()` - stops all elements immediately. Further calls to `Update()`
-  have no effect.
+- `Stop(mode = jled::eIdleMode::TO_MIN_BRIGHTNESS)` - stops all elements
+  immediately. `mode` controls the final brightness of each LED, identical to
+  [`JLed::Stop(mode)`](#immediate-stop). Further calls to `Update()` have no effect.
 - `Reset()` - resets all elements and restarts the group from the beginning.
 
 `JLedAny` has a fixed-size internal buffer sized to hold `JLed`, `JLedHD`,
